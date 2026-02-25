@@ -82,13 +82,36 @@ cd freshservice-mcp
 
 ### 2. Configure Claude Desktop
 
-Open your Claude Desktop config file:
+You need to edit a JSON config file that tells Claude Desktop about the MCP server.
 
-- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-- **Linux:** `~/.config/Claude/claude_desktop_config.json`
+**Step 1 — Open the config file in a text editor:**
 
-Add the following inside the `mcpServers` object (create the file if it doesn't exist):
+- **macOS:**
+  ```bash
+  open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
+  ```
+  Or open Finder, press **Cmd+Shift+G**, paste `~/Library/Application Support/Claude/` and open `claude_desktop_config.json`.
+
+- **Windows:**
+  Press **Win+R**, type `%APPDATA%\Claude` and press Enter, then open `claude_desktop_config.json` with Notepad.
+
+- **Linux:**
+  ```bash
+  nano ~/.config/Claude/claude_desktop_config.json
+  ```
+
+> If the file doesn't exist yet, create it as a new empty file in that folder.
+
+---
+
+**Step 2 — Find the absolute path to the cloned repo:**
+
+- **macOS / Linux:** Open Terminal, `cd` into the repo folder and run `pwd`. Copy the output.
+- **Windows:** Open the repo folder in Explorer, click the address bar and copy the full path.
+
+---
+
+**Step 3 — Replace the file contents with the following**, substituting your own values:
 
 ```json
 {
@@ -97,7 +120,8 @@ Add the following inside the `mcpServers` object (create the file if it doesn't 
       "command": "uv",
       "args": [
         "run",
-        "--directory", "/full/path/to/freshservice-mcp",
+        "--directory",
+        "/full/path/to/freshservice-mcp",
         "freshservice-mcp"
       ],
       "env": {
@@ -109,10 +133,15 @@ Add the following inside the `mcpServers` object (create the file if it doesn't 
 }
 ```
 
-**Replace:**
-- `/full/path/to/freshservice-mcp` → the absolute path where you cloned this repo (e.g. `/Users/alice/freshservice-mcp` on macOS, `C:\Users\alice\freshservice-mcp` on Windows)
-- `your_api_key_here` → your Freshservice API key
-- `yourcompany.freshservice.com` → your Freshservice domain (just the domain, no `https://`)
+**Replace these three values:**
+
+| Placeholder | Replace with |
+|---|---|
+| `/full/path/to/freshservice-mcp` | The absolute path from Step 2 (e.g. `/Users/alice/freshservice-mcp` on macOS, `C:\Users\alice\freshservice-mcp` on Windows) |
+| `your_api_key_here` | Your Freshservice API key |
+| `yourcompany.freshservice.com` | Your Freshservice domain — just the hostname, no `https://` |
+
+> **Already have other MCP servers configured?** Don't replace the whole file. Instead, add the `"freshservice": { ... }` block alongside your existing entries inside the `"mcpServers"` object.
 
 ### 3. Restart Claude Desktop
 
