@@ -112,6 +112,26 @@ while true; do
   break
 done
 
+# ── Optional: SSL certificate file ───────────────────────────────────────────
+SSL_CERT_FILE=""
+echo ""
+echo -e "${BOLD}SSL certificate (optional)${RESET}"
+echo "If you're behind a corporate proxy with SSL inspection, enter the path to"
+echo "your CA bundle. Press Enter to skip."
+read -rp "$(echo -e "${BOLD}Path to CA bundle${RESET} (leave blank to skip): ")" SSL_CERT_FILE
+
+if [[ -n "$SSL_CERT_FILE" ]]; then
+  # Expand ~ if present
+  SSL_CERT_FILE="${SSL_CERT_FILE/#\~/$HOME}"
+
+  if [[ ! -f "$SSL_CERT_FILE" ]]; then
+    warn "File not found: $SSL_CERT_FILE — SSL_CERT_FILE will not be added to the config."
+    SSL_CERT_FILE=""
+  else
+    success "CA bundle: $SSL_CERT_FILE"
+  fi
+fi
+
 echo ""
 
 # ── Claude Desktop config file ────────────────────────────────────────────────
@@ -132,11 +152,11 @@ else
 fi
 
 # ── Merge config using Python (always available on macOS) ─────────────────────
-python3 - "$CONFIG_FILE" "$REPO_DIR" "$FS_APIKEY" "$FS_DOMAIN" <<'PYEOF'
+python3 - "$CONFIG_FILE" "$REPO_DIR" "$FS_APIKEY" "$FS_DOMAIN" "$SSL_CERT_FILE" <<'PYEOF'
 import json
 import sys
 
-config_path, repo_dir, api_key, domain = sys.argv[1:]
+config_path, repo_dir, api_key, domain, ssl_cert_file = sys.argv[1:]
 
 with open(config_path, "r") as f:
     content = f.read().strip()
@@ -152,6 +172,13 @@ if not isinstance(config, dict):
 
 config.setdefault("mcpServers", {})
 
+env = {
+    "FRESHSERVICE_APIKEY": api_key,
+    "FRESHSERVICE_DOMAIN": domain,
+}
+if ssl_cert_file:
+    env["SSL_CERT_FILE"] = ssl_cert_file
+
 config["mcpServers"]["freshservice"] = {
     "command": "uv",
     "args": [
@@ -160,10 +187,7 @@ config["mcpServers"]["freshservice"] = {
         repo_dir,
         "freshservice-mcp"
     ],
-    "env": {
-        "FRESHSERVICE_APIKEY": api_key,
-        "FRESHSERVICE_DOMAIN": domain
-    }
+    "env": env,
 }
 
 with open(config_path, "w") as f:
