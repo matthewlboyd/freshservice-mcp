@@ -82,46 +82,27 @@ cd freshservice-mcp
 
 ### 2. Configure Claude Desktop
 
-**macOS users — run the install script:**
+**macOS — run the install script (recommended):**
 
 ```bash
 ./install.sh
 ```
 
-The script will prompt for your API key and domain, update the config file automatically, test the API connection, and offer to restart Claude Desktop.
-
-**Manual setup (all platforms):**
-
-You need to edit a JSON config file that tells Claude Desktop about the MCP server.
-
-**Step 1 — Open the config file in a text editor:**
-
-- **macOS:**
-  ```bash
-  open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
-  ```
-  Or open Finder, press **Cmd+Shift+G**, paste `~/Library/Application Support/Claude/` and open `claude_desktop_config.json`.
-
-- **Windows:**
-  Press **Win+R**, type `%APPDATA%\Claude` and press Enter, then open `claude_desktop_config.json` with Notepad.
-
-- **Linux:**
-  ```bash
-  nano ~/.config/Claude/claude_desktop_config.json
-  ```
-
-> If the file doesn't exist yet, create it as a new empty file in that folder.
+This handles everything automatically: prompts for your repo path, API key, and domain, writes the config, tests the connection, and restarts Claude Desktop.
 
 ---
 
-**Step 2 — Find the absolute path to the cloned repo:**
+**All platforms — manual setup:**
 
-- **macOS / Linux:** Open Terminal, `cd` into the repo folder and run `pwd`. Copy the output.
-- **Windows:** Open the repo folder in Explorer, click the address bar and copy the full path.
+Open the Claude Desktop config file in any text editor:
 
----
+| OS | Path |
+|---|---|
+| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
+| Linux | `~/.config/Claude/claude_desktop_config.json` |
 
-**Step 3 — Replace the file contents with the following**, substituting your own values:
+Add the following, replacing the three placeholder values. If the file doesn't exist yet, create it with just this content:
 
 ```json
 {
@@ -143,15 +124,11 @@ You need to edit a JSON config file that tells Claude Desktop about the MCP serv
 }
 ```
 
-**Replace these three values:**
+- `/full/path/to/freshservice-mcp` — absolute path to the cloned repo (`pwd` on macOS/Linux, or copy from Explorer's address bar on Windows)
+- `your_api_key_here` — your Freshservice API key
+- `yourcompany.freshservice.com` — your Freshservice domain, no `https://`
 
-| Placeholder | Replace with |
-|---|---|
-| `/full/path/to/freshservice-mcp` | The absolute path from Step 2 (e.g. `/Users/alice/freshservice-mcp` on macOS, `C:\Users\alice\freshservice-mcp` on Windows) |
-| `your_api_key_here` | Your Freshservice API key |
-| `yourcompany.freshservice.com` | Your Freshservice domain — just the hostname, no `https://` |
-
-> **Already have other MCP servers configured?** Don't replace the whole file. Instead, add the `"freshservice": { ... }` block alongside your existing entries inside the `"mcpServers"` object.
+> Already have other MCP servers? Add just the `"freshservice": { ... }` block inside your existing `"mcpServers"` object instead of replacing the whole file.
 
 ### 3. Restart Claude Desktop
 
