@@ -82,7 +82,7 @@ cd freshservice-mcp
 
 ### 2. Configure Claude Desktop
 
-**macOS — run the install script (recommended):**
+**Option A — macOS install script (recommended):**
 
 ```bash
 ./install.sh
@@ -92,7 +92,7 @@ This handles everything automatically: prompts for your repo path, API key, and 
 
 ---
 
-**All platforms — manual setup:**
+**Option B — Manual setup (all platforms):**
 
 Open the Claude Desktop config file in any text editor:
 
@@ -102,7 +102,7 @@ Open the Claude Desktop config file in any text editor:
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 | Linux | `~/.config/Claude/claude_desktop_config.json` |
 
-Add the following, replacing the three placeholder values. If the file doesn't exist yet, create it with just this content:
+Paste the following into the file, replacing the three placeholder values. If the file doesn't exist yet, create it with just this content:
 
 ```json
 {
