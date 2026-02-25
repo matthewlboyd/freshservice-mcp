@@ -57,10 +57,13 @@ class FreshserviceClient:
             "Accept": "application/json",
         }
 
+        verify: bool | str = os.environ.get("SSL_CERT_FILE", True)
+
         self._client = httpx.AsyncClient(
             headers=self._headers,
             timeout=httpx.Timeout(30.0, connect=10.0),
             follow_redirects=True,
+            verify=verify,
         )
 
     async def close(self):

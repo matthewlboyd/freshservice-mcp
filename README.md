@@ -47,7 +47,7 @@ Once set up, you can say things like:
 
 - **Python 3.10+**
 - **uv** — fast Python package manager
-- **Claude Desktop** — [download here](https://claude.ai/download)
+- **Claude Desktop** or **Claude Code** (see [Setup](#setup) below)
 - A **Freshservice account** with an API key
 
 ### Install uv
@@ -73,6 +73,12 @@ brew install uv
 
 ## Setup
 
+> **Claude Desktop vs Claude Code**
+> - **Claude Desktop** is the standalone GUI app ([download](https://claude.ai/download)). MCP servers are configured in a JSON config file and loaded when the app starts.
+> - **Claude Code** is the CLI tool (`claude`). MCP servers are configured per-project or per-user via the `claude mcp add` command and are available immediately — no restart needed.
+>
+> Follow the section that matches the client you're using.
+
 ### 1. Clone the repository
 
 ```bash
@@ -80,7 +86,9 @@ git clone https://github.com/StackEng/freshservice-mcp.git
 cd freshservice-mcp
 ```
 
-### 2. Configure Claude Desktop
+---
+
+### 2a. Configure Claude Desktop
 
 **Option A — macOS install script (recommended):**
 
@@ -130,9 +138,66 @@ Paste the following into the file, replacing the three placeholder values. If th
 
 > Already have other MCP servers? Add just the `"freshservice": { ... }` block inside your existing `"mcpServers"` object instead of replacing the whole file.
 
-### 3. Restart Claude Desktop
+**Restart Claude Desktop** — quit and reopen it. The first launch will automatically install dependencies (takes ~30 seconds). You should see a hammer icon (🔨) in the chat input, indicating MCP tools are available.
 
-Quit and reopen Claude Desktop. The first launch will automatically install dependencies (takes ~30 seconds). You should see a hammer icon (🔨) in the chat input, indicating MCP tools are available.
+---
+
+### 2b. Configure Claude Code
+
+Claude Code stores MCP server config separately from Claude Desktop. Use the `claude mcp add` command to register the server.
+
+**Recommended: project-local scope (credentials stay off disk in your project)**
+
+Run this once from any directory (you can run it from inside the freshservice-mcp repo or from a project where you want to use it):
+
+```bash
+claude mcp add freshservice \
+  --scope local \
+  --env FRESHSERVICE_APIKEY=your_api_key_here \
+  --env FRESHSERVICE_DOMAIN=yourcompany.freshservice.com \
+  -- uv run --directory /full/path/to/freshservice-mcp freshservice-mcp
+```
+
+- `--scope local` stores the config in `.claude/settings.local.json`, which is **gitignored by default** — your API key will not be committed to version control.
+- Replace `/full/path/to/freshservice-mcp` with the absolute path to the cloned repo.
+- Replace `your_api_key_here` and `yourcompany.freshservice.com` with your credentials.
+
+**Alternative: user scope (available in all your projects)**
+
+```bash
+claude mcp add freshservice \
+  --scope user \
+  --env FRESHSERVICE_APIKEY=your_api_key_here \
+  --env FRESHSERVICE_DOMAIN=yourcompany.freshservice.com \
+  -- uv run --directory /full/path/to/freshservice-mcp freshservice-mcp
+```
+
+`--scope user` saves to `~/.claude.json`, making the server available globally across all your projects.
+
+> **Security note:** Never use `--scope project` with credentials hardcoded in the command — the `project` scope writes to `.mcp.json`, which is typically committed to version control. Use `local` or `user` scope, or pass credentials via environment variables already set in your shell.
+
+**Corporate / custom SSL certificates**
+
+If you're behind a corporate proxy that performs SSL inspection, you may need to point the server at your organisation's CA bundle. Add `SSL_CERT_FILE` alongside your other `--env` flags:
+
+```bash
+claude mcp add freshservice \
+  --scope local \
+  --env FRESHSERVICE_APIKEY=your_api_key_here \
+  --env FRESHSERVICE_DOMAIN=yourcompany.freshservice.com \
+  --env SSL_CERT_FILE=/path/to/your/ca-bundle.crt \
+  -- uv run --directory /full/path/to/freshservice-mcp freshservice-mcp
+```
+
+When `SSL_CERT_FILE` is set, the client uses that file as the CA bundle instead of the system default. Omit it entirely if you don't need a custom certificate.
+
+**Verify the server is registered:**
+
+```bash
+claude mcp list
+```
+
+You should see `freshservice` in the output. No restart is needed — Claude Code picks up MCP servers at the start of each session.
 
 ---
 
@@ -208,11 +273,17 @@ uv run pytest tests/test_tickets.py -v
 **Tools don't appear in Claude Desktop**
 Make sure the path in `--directory` is the absolute path to the repo and that you've fully quit and restarted Claude (not just closed the window).
 
+**Tools don't appear in Claude Code**
+Run `claude mcp list` to confirm the server is registered. If it is, start a new `claude` session — MCP servers are loaded at session start. If it's missing, re-run the `claude mcp add` command.
+
 **Authentication error (401)**
 Your API key is incorrect. Double-check it in Freshservice → Profile Settings. Copy it using the copy icon rather than selecting the text manually.
 
 **403 Forbidden**
 The API key doesn't have permission for that operation, or the domain is wrong. Confirm `FRESHSERVICE_DOMAIN` is just the hostname (e.g. `yourcompany.freshservice.com`), with no `https://` prefix.
+
+**SSL certificate errors**
+If you're behind a corporate proxy with SSL inspection, requests will fail with a certificate verification error. Set the `SSL_CERT_FILE` environment variable to the path of your organisation's CA bundle. In Claude Desktop, add it to the `"env"` block in `claude_desktop_config.json`. In Claude Code, pass `--env SSL_CERT_FILE=/path/to/ca-bundle.crt` when running `claude mcp add`.
 
 **Rate limiting (429)**
 Freshservice enforces per-minute API rate limits based on your plan. Wait a moment and try again.
