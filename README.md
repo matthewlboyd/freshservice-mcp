@@ -150,6 +150,43 @@ Quit and reopen Claude Desktop. The first launch will automatically install depe
 
 ---
 
+## Running the tests
+
+The test suite covers all 62 tools and the API client (117 tests total). No Freshservice credentials are needed — all tests use mocked HTTP calls.
+
+**Install dev dependencies:**
+
+```bash
+uv pip install -e ".[dev]"
+```
+
+**Run all tests:**
+
+```bash
+uv run pytest tests/ -v
+```
+
+**Run a specific module's tests:**
+
+```bash
+uv run pytest tests/test_tickets.py -v
+```
+
+**Test files:**
+
+| File | What it covers |
+|------|---------------|
+| `test_client.py` | HTTP client — auth, domain normalisation, error handling |
+| `test_tickets.py` | Ticket tools |
+| `test_conversations.py` | Reply, notes, delete note |
+| `test_changes.py` | Change request tools |
+| `test_assets.py` | Asset tools |
+| `test_people.py` | Agents, requesters, groups |
+| `test_knowledge_base.py` | Solution categories, folders, articles |
+| `test_misc.py` | Problems, products, workspaces, canned responses, departments, locations, software, vendors, service catalog, announcements, contracts, purchase orders |
+
+---
+
 ## Troubleshooting
 
 **Tools don't appear in Claude Desktop**
