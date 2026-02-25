@@ -136,6 +136,16 @@ Paste the following into the file, replacing the three placeholder values. If th
 - `your_api_key_here` — your Freshservice API key
 - `yourcompany.freshservice.com` — your Freshservice domain, no `https://`
 
+If you're behind a corporate proxy with SSL inspection, add `SSL_CERT_FILE` to the `env` block pointing at your CA bundle:
+
+```json
+"env": {
+  "FRESHSERVICE_APIKEY": "your_api_key_here",
+  "FRESHSERVICE_DOMAIN": "yourcompany.freshservice.com",
+  "SSL_CERT_FILE": "/path/to/your/ca-bundle.crt"
+}
+```
+
 > Already have other MCP servers? Add just the `"freshservice": { ... }` block inside your existing `"mcpServers"` object instead of replacing the whole file.
 
 **Restart Claude Desktop** — quit and reopen it. The first launch will automatically install dependencies (takes ~30 seconds). You should see a hammer icon (🔨) in the chat input, indicating MCP tools are available.
