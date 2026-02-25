@@ -82,6 +82,16 @@ cd freshservice-mcp
 
 ### 2. Configure Claude Desktop
 
+**macOS users — run the install script:**
+
+```bash
+./install.sh
+```
+
+The script will prompt for your API key and domain, update the config file automatically, test the API connection, and offer to restart Claude Desktop.
+
+**Manual setup (all platforms):**
+
 You need to edit a JSON config file that tells Claude Desktop about the MCP server.
 
 **Step 1 — Open the config file in a text editor:**
