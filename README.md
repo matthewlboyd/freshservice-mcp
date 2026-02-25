@@ -18,7 +18,7 @@ Once set up, you can say things like:
 | Module | Operations |
 |--------|-----------|
 | **Tickets** | Create, view, list, update, delete, filter, get field definitions |
-| **Conversations** | List, reply to ticket, add notes (public/private) |
+| **Conversations** | List, reply to ticket, add notes (public/private), delete notes |
 | **Changes** | Create, view, list, update, close, delete, filter, tasks, notes |
 | **Assets** | Create, view, list, update, delete, search, filter, get types |
 | **Problems** | Create, view, list |

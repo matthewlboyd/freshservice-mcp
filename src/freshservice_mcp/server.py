@@ -271,6 +271,19 @@ async def add_ticket_note(ticket_id: int, body: str, private: bool = True) -> st
     return _fmt(data)
 
 
+@mcp.tool()
+async def delete_ticket_note(ticket_id: int, conversation_id: int) -> str:
+    """Delete a note from a ticket.
+
+    Args:
+        ticket_id: The ticket ID.
+        conversation_id: The conversation (note) ID to delete.
+    """
+    c = _client_or_error()
+    await c.delete(f"tickets/{ticket_id}/conversations/{conversation_id}")
+    return "Note deleted successfully."
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 # CHANGES
 # ═══════════════════════════════════════════════════════════════════════════
