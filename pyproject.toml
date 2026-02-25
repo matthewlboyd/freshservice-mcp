@@ -1,0 +1,16 @@
+[project]
+name = "freshservice-mcp"
+version = "1.0.0"
+description = "A local MCP server for Freshservice ITSM - manage tickets, changes, assets, and more"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.0.0",
+    "httpx>=0.27.0",
+]
+
+[project.scripts]
+freshservice-mcp = "freshservice_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
