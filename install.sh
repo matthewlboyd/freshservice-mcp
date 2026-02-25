@@ -26,9 +26,36 @@ echo -e "${BOLD}Freshservice MCP — Claude Desktop Setup${RESET}"
 echo "──────────────────────────────────────────"
 echo ""
 
-# ── Repo path (directory this script lives in) ────────────────────────────────
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-info "Repo path: $REPO_DIR"
+# ── Prompt for repo directory ─────────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+while true; do
+  read -rp "$(echo -e "${BOLD}Path to freshservice-mcp folder${RESET} [${SCRIPT_DIR}]: ")" REPO_DIR
+
+  # Default to the script's own directory if user presses Enter
+  REPO_DIR="${REPO_DIR:-$SCRIPT_DIR}"
+
+  # Expand ~ if present
+  REPO_DIR="${REPO_DIR/#\~/$HOME}"
+
+  # Strip trailing slash
+  REPO_DIR="${REPO_DIR%/}"
+
+  if [[ ! -d "$REPO_DIR" ]]; then
+    warn "Directory not found: $REPO_DIR — please try again."
+    continue
+  fi
+
+  if [[ ! -f "$REPO_DIR/pyproject.toml" ]]; then
+    warn "$REPO_DIR doesn't look like the freshservice-mcp repo (pyproject.toml not found)."
+    read -rp "Continue anyway? [y/N]: " CONFIRM
+    [[ "$CONFIRM" =~ ^[Yy]$ ]] && break || continue
+  fi
+
+  break
+done
+
+success "Repo path: $REPO_DIR"
 echo ""
 
 # ── Check uv is installed ─────────────────────────────────────────────────────
