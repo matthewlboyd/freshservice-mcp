@@ -82,7 +82,7 @@ brew install uv
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/StackEng/freshservice-mcp.git
+git clone https://github.com/matthewlboyd/freshservice-mcp.git
 cd freshservice-mcp
 ```
 
